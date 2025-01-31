@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrant fájl - Soós Attila
+#Devops training
+#7. Házi feladat - 2025 január
+
+#/etc/hosts fájl bejegyzések hozzáadása, hogy a létrejött VM gépek lássák egymást
+$etchosts = <<-HOSTFILE_ENTRIES
+cp /etc/hosts /root && \
+echo '\n192.168.56.100 ansible >> /etc/hosts && \
+echo '192.168.56.101 web >> /etc/hosts
+HOSTFILE_ENTRIES
+
+
+Vagrant.configure("2") do |config|
+#a feladat szerinti "ansible" gép létrehozása
+  config.vm.define "ansible" do |ansible|
+    ansible.vm.box = "bento/rockylinux-9"                                       #OS a feladat szerinti Rocky Linux 9
+    ansible.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"                                                        #memória 1 GB
+    end
+    ansible.vm.network "private_network", ip: "192.168.56.100"                  #IP cím beállítása
+    ansible.vm.synced_folder "./shared", "/shared"                              #shared folder felcsatolása
+    ansible.vm.provision "shell", inline: $etchosts                             #hosts fájl módosítása
+    ansible.vm.provision "shell", inline: "hostnamectl set-hostname ansible"    #gépnév beállítáa
+  end
+
+#a feladat szerinti "web" gép létrehozása
+  config.vm.define "web" do |web|
+    web.vm.box = "bento/rockylinux-9"                                       #OS a feladat szerinti Rocky Linux 9
+    web.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"                                                    #memória 1 GB
+    end
+    web.vm.network "private_network", ip: "192.168.56.101"                  #IP cím beállítása
+    web.vm.synced_folder "./shared", "/shared"                              #shared folder felcsatolása
+    web.vm.provision "shell", inline: $etchosts                             #hosts fájl módosítása
+    web.vm.provision "shell", inline: "useradd -m -p '$1$NVUTa4AE$InjUM8Lioo34GEGEfK6My/' homework" # a feladat szerinti "homework" user létrehozása
+    web.vm.provision "shell", inline: "hostnamectl set-hostname web"        #gépnév beállítáa
+    web.vm.network "forwarded_port", guest:80, host:8888, host_ip: "127.0.0.1"  #a feladat szerint a http  (80) port forward-olása a localhost 8888 portjára
+  end
+end
