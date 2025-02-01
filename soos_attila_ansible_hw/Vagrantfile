@@ -9,7 +9,7 @@
 $etchosts = <<-HOSTFILE_ENTRIES
 cp /etc/hosts /root && \
 echo '\n192.168.56.100 ansible' >> /etc/hosts && \
-echo '192.168.56.101' web >> /etc/hosts
+echo '192.168.56.101 web' >> /etc/hosts
 HOSTFILE_ENTRIES
 
 $edit_sudoers = <<-SUDOERS
