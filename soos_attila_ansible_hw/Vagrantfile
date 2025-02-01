@@ -12,6 +12,10 @@ echo '\n192.168.56.100 ansible >> /etc/hosts && \
 echo '192.168.56.101 web >> /etc/hosts
 HOSTFILE_ENTRIES
 
+$edit_sudoers = <<-SUDOERS
+echo "homework ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/homework
+SUDOERS
+
 
 Vagrant.configure("2") do |config|
 #a feladat szerinti "ansible" gép létrehozása
@@ -24,6 +28,8 @@ Vagrant.configure("2") do |config|
     ansible.vm.synced_folder "./shared", "/shared"                              #shared folder felcsatolása
     ansible.vm.provision "shell", inline: $etchosts                             #hosts fájl módosítása
     ansible.vm.provision "shell", inline: "hostnamectl set-hostname ansible"    #gépnév beállítáa
+    ansible.vm.provision "shell", path: "provision/ansible.sh"                  #telepíti az ansible-t
+
   end
 
 #a feladat szerinti "web" gép létrehozása
@@ -36,6 +42,7 @@ Vagrant.configure("2") do |config|
     web.vm.synced_folder "./shared", "/shared"                              #shared folder felcsatolása
     web.vm.provision "shell", inline: $etchosts                             #hosts fájl módosítása
     web.vm.provision "shell", inline: "useradd -m -p '$1$NVUTa4AE$InjUM8Lioo34GEGEfK6My/' homework" # a feladat szerinti "homework" user létrehozása
+    web.vm.provision "shell", inline: $edit_sudoers                         #homework user hozzáadása a sudoers listához
     web.vm.provision "shell", inline: "hostnamectl set-hostname web"        #gépnév beállítáa
     web.vm.network "forwarded_port", guest:80, host:8888, host_ip: "127.0.0.1"  #a feladat szerint a http  (80) port forward-olása a localhost 8888 portjára
   end
