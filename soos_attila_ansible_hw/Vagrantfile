@@ -8,8 +8,8 @@
 #/etc/hosts fájl bejegyzések hozzáadása, hogy a létrejött VM gépek lássák egymást
 $etchosts = <<-HOSTFILE_ENTRIES
 cp /etc/hosts /root && \
-echo '\n192.168.56.100 ansible >> /etc/hosts && \
-echo '192.168.56.101 web >> /etc/hosts
+echo '\n192.168.56.100 ansible' >> /etc/hosts && \
+echo '192.168.56.101' web >> /etc/hosts
 HOSTFILE_ENTRIES
 
 $edit_sudoers = <<-SUDOERS
@@ -29,6 +29,7 @@ Vagrant.configure("2") do |config|
     ansible.vm.provision "shell", inline: $etchosts                             #hosts fájl módosítása
     ansible.vm.provision "shell", inline: "hostnamectl set-hostname ansible"    #gépnév beállítáa
     ansible.vm.provision "shell", path: "provision/ansible.sh"                  #telepíti az ansible-t
+    ansible.vm.provision "shell", inline: "ssh-keyscan web >> ~/.ssh/known_hosts" #ssh host key check (fingerprint)
 
   end
 
