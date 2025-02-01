@@ -18,6 +18,22 @@ SUDOERS
 
 
 Vagrant.configure("2") do |config|
+#a feladat szerinti "web" gép létrehozása
+  config.vm.define "web" do |web|
+    web.vm.box = "bento/rockylinux-9"                                       #OS a feladat szerinti Rocky Linux 9
+    web.vm.box = "bento/rockylinux-9"                                       #OS a feladat szerinti Rocky Linux 9
+    web.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"                                                    #memória 1 GB
+    end
+    web.vm.network "private_network", ip: "192.168.56.101"                  #IP cím beállítása
+    web.vm.synced_folder "./shared", "/shared"                              #shared folder felcsatolása
+    web.vm.provision "shell", inline: $etchosts                             #hosts fájl módosítása
+    web.vm.provision "shell", inline: "useradd -m -p '$1$NVUTa4AE$InjUM8Lioo34GEGEfK6My/' homework" # a feladat szerinti "homework" user létrehozása
+    web.vm.provision "shell", inline: $edit_sudoers                         #homework user hozzáadása a sudoers listához
+    web.vm.provision "shell", inline: "hostnamectl set-hostname web"        #gépnév beállítáa
+    web.vm.network "forwarded_port", guest:80, host:8888, host_ip: "127.0.0.1"  #a feladat szerint a http  (80) port forward-olása a localhost 8888 portjára
+  end
+
 #a feladat szerinti "ansible" gép létrehozása
   config.vm.define "ansible" do |ansible|
     ansible.vm.box = "bento/rockylinux-9"                                       #OS a feladat szerinti Rocky Linux 9
@@ -30,21 +46,5 @@ Vagrant.configure("2") do |config|
     ansible.vm.provision "shell", inline: "hostnamectl set-hostname ansible"    #gépnév beállítáa
     ansible.vm.provision "shell", path: "provision/ansible.sh"                  #telepíti az ansible-t
     ansible.vm.provision "shell", inline: "ssh-keyscan web >> ~/.ssh/known_hosts" #ssh host key check (fingerprint)
-
-  end
-
-#a feladat szerinti "web" gép létrehozása
-  config.vm.define "web" do |web|
-    web.vm.box = "bento/rockylinux-9"                                       #OS a feladat szerinti Rocky Linux 9
-    web.vm.provider "virtualbox" do |vb|
-      vb.memory = "1024"                                                    #memória 1 GB
-    end
-    web.vm.network "private_network", ip: "192.168.56.101"                  #IP cím beállítása
-    web.vm.synced_folder "./shared", "/shared"                              #shared folder felcsatolása
-    web.vm.provision "shell", inline: $etchosts                             #hosts fájl módosítása
-    web.vm.provision "shell", inline: "useradd -m -p '$1$NVUTa4AE$InjUM8Lioo34GEGEfK6My/' homework" # a feladat szerinti "homework" user létrehozása
-    web.vm.provision "shell", inline: $edit_sudoers                         #homework user hozzáadása a sudoers listához
-    web.vm.provision "shell", inline: "hostnamectl set-hostname web"        #gépnév beállítáa
-    web.vm.network "forwarded_port", guest:80, host:8888, host_ip: "127.0.0.1"  #a feladat szerint a http  (80) port forward-olása a localhost 8888 portjára
   end
 end

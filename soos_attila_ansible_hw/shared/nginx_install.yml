@@ -1,9 +1,9 @@
 ---
 - name: NGINX server install
-  hosts: web-servers
+  hosts: web_servers
   become: yes
   vars:
-    - my_name: "<h1>Soós Attila</h1>"
+    - my_name: "Soós Attila"
 
   tasks:
 
