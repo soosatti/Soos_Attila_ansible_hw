@@ -14,8 +14,14 @@ A ./provision mappában a következők találhatók:
 * ansible.sh - telepíti egy gépen az ansible servert
 
 ## A shared mappa tartalma
-* nginx_install.yml  - ansible playbook, installálja az nginx szervert 
-* git.sh             - bash script, letölti a publikus github repoból a lkoális helyre a fájlokat
+* ___git.sh___             - bash script, letölti a publikus github repoból a lkoális helyre a fájlokat
+* ___nginx_install.yml___  - ansible playbook, installálja az nginx szervert
+* ___my_index.j2___        - a web szerver index.html fájljának sablonja, a ___my_name___ változó nginx_install playbook futásakor kap értéket
+* ___inventory___          - inventory fájl, csoportosítva tartalmazza az ansible és web servereket
+* copy_for_diff_nginx_install.yml - összehasonlítási alap, a github repository-ból a git.sh által letöltött nginx_install.sh tartalmának validálásához
+
+
+
 
 
 

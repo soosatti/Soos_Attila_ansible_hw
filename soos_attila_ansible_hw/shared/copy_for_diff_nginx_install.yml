@@ -1,0 +1,26 @@
+---
+- name: NGINX server install
+  hosts: web_servers
+  become: yes
+  vars:
+    - my_name: "Soós Attila"
+
+  tasks:
+
+    - name: Telepítse az Nginx csomagot
+      package:
+        name: nginx
+        state: present
+      
+    - name: index.html módosítása
+      template:
+        src: my_index.j2
+        dest: /usr/share/nginx/html/index.html
+      notify: Restart Nginx
+
+      
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
