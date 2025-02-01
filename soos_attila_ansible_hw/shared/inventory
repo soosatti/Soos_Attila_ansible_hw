@@ -1,0 +1,4 @@
+[ansible_servers]
+ansible ansible_host=ansible ansible_port=22 ansible_user=vagrant ansible_ssh_pass=vagrant
+[web_servers]
+web ansible_host=web ansible_port=22 ansible_user=vagrant ansible_ssh_pass=vagrant
