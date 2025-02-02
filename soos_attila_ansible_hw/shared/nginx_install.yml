@@ -3,7 +3,8 @@
   hosts: web_servers
   become: yes
   vars:
-    - my_name: "Soós Attila"
+    - my_header: "My nginx server"
+    - my_name: "<h1>Soós Attila</h1>"
 
   tasks:
 
